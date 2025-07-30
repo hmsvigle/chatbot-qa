@@ -245,6 +245,15 @@ docs/
     ├── customization.md           # Modifying Q&A data
     └── advanced-usage.md          # Power user features
 ```
+### Phase-1 Results:
+* On a Static qa.csv data, symantic search is working.
+* Interpretes question from the available content & responds with proper confidence.
+* Totaly unrelated questions are not identoified & responds formally.  
+
+<img width="926" height="940" alt="image" src="https://github.com/user-attachments/assets/499c9c46-d0c8-4810-acab-4ac5ae1adbcd" />
+
+<img width="557" height="393" alt="image" src="https://github.com/user-attachments/assets/88e67d4f-4b08-42d5-8807-e7cd437cf762" />
+
 
 ## 🎯 Next Steps (Future Phases)
 
