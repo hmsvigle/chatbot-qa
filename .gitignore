@@ -1,0 +1,6 @@
+# ignore virtual env directory
+chatbot-qa
+
+# personal apitokens
+.env
+
