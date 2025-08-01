@@ -54,34 +54,38 @@ This project follows a **Frontend-Backend Separation** pattern:
 chatbot-qa/
 ├── main.py                     # 🚀 Main application entry point
 ├── requirements.txt            # 📋 Python dependencies with pinned versions  
-├── pyproject.toml             # 🔧 UV project configuration (Phase 2)
+├── pyproject.toml             # 🔧 UV project configuration
 ├── README.md                  # 📖 Project documentation & theoretical guide
-├── PHASE2_SUMMARY.md          # 📄 Phase 2 implementation overview
-├── PHASE2_TECHNICAL.md        # 🔬 Detailed Phase 2 technical documentation
+├── docs/                      # 📚 All project documentation
+│   ├── README.md              # 📋 Documentation index
+│   ├── PHASE2_SUMMARY.md      # 📄 Phase 2 implementation overview
+│   ├── PHASE2_TECHNICAL.md    # 🔬 Detailed technical documentation
+│   └── DEVELOPMENT_GUIDELINES.md # 📋 Release management guidelines
+├── tests_and_demos/           # 🧪 All testing and demonstration code
+│   ├── README.md              # 📋 Testing and demo guide
+│   ├── test_enhanced_system.py    # 🧪 Comprehensive system testing
+│   ├── test_final_system.py       # ✅ Final validation testing
+│   ├── demo_comparison.py          # 🔄 Interactive phase comparison
+│   └── generate_local_tests.py    # 🏗️ Local test script generator
 ├── .venv/                     # 🐍 UV virtual environment
 ├── data/
 │   ├── qa.csv                 # 📊 Legacy Q&A knowledge base (Phase 1)
 │   ├── content.txt            # 📋 Rich EJARI documentation source (Phase 2)
 │   └── embeddings/            # 💾 Enhanced embeddings with content metadata
-│       └── embeddings.pkl     # 🗂️ Pickled embeddings + content chunks
 ├── frontend/
 │   └── ui.py                  # 🎨 Streamlit UI components & chat interface
 ├── backend/
-│   ├── __init__.py
 │   ├── models/
-│   │   ├── __init__.py
 │   │   └── qa_model.py        # 🏷️ Data models (QAPair, SearchResult, ChatMessage)
 │   ├── services/
-│   │   ├── __init__.py
 │   │   ├── semantic_search.py # 🔍 Enhanced content-based semantic search
 │   │   └── chatbot_service.py # 🤖 High-level chatbot business logic
 │   └── utils/
-│       ├── __init__.py
-│       ├── config.py          # ⚙️ Configuration & content paths (updated)
-│       └── content_parser.py  # 📝 Intelligent document processing (Phase 2)
-├── test_enhanced_system.py    # 🧪 Comprehensive system testing (Phase 2)
-├── test_final_system.py       # ✅ Final validation testing (Phase 2) 
-└── test_backend.py            # 🔧 Backend component testing
+│       ├── config.py          # ⚙️ Configuration & content paths
+│       ├── content_parser.py  # 📝 Intelligent document processing (Phase 2)
+│       ├── version_manager.py # 🔄 Phase/version management system
+│       └── release_manager.py # 🏗️ Release management and testing
+└── test_backend.py            # 🔧 Backend component testing (legacy)
 ```
 
 ## 🚀 Quick Start
@@ -100,17 +104,128 @@ source chatbot-qa/bin/activate  # Linux/Mac
 
 ### 2. Install Dependencies
 ```bash
-# Install with pinned versions for stability
-uv pip install -r requirements.txt
+# Initialize UV project and install dependencies
+uv init --python 3.13
+uv add pandas sentence-transformers scikit-learn numpy streamlit torch
 ```
 
 ### 3. Launch Application
 ```bash
-# Start the Streamlit chatbot
-streamlit run main.py
+# Start the enhanced chatbot with UV
+uv run streamlit run main.py
 ```
 
 📍 **Access**: Open http://localhost:8501 in your browser
+
+## 🧪 Phase 2 Testing & Demonstration
+
+### **Quick Phase 2 Validation**
+```bash
+# Test Phase 2 enhanced system (90% success rate expected)
+uv run python tests_and_demos/test_final_system.py
+```
+**Expected Results:** 90% success rate, 178 content chunks processed, content categorization working
+
+### **Interactive Phase Comparison Demo**
+```bash
+# Compare Phase 1 vs Phase 2 side-by-side
+uv run python tests_and_demos/demo_comparison.py
+```
+**Demo Options:**
+- `1` - Phase 1 vs Phase 2 comparison (recommended for showcasing improvements)
+- `2` - Phase 1 only (CSV-based system, limited coverage) 
+- `3` - Phase 2 only (Content-based system, comprehensive coverage)
+- `4` - Show all available phases and their capabilities
+
+### **Manual Application Testing**
+```bash
+# Navigate to project directory
+cd /Users/himansu.panigrahy/Documents/Personal_Projects/Chatbots/chatbot-QA
+
+# Start application (auto-detects optimal phase)
+uv run streamlit run main.py
+
+# Alternative: Use specific port if 8501 is busy
+uv run streamlit run main.py --server.port 8502
+```
+
+**Phase 2 Manual Testing Checklist:**
+1. **✅ Check Sidebar**: Look for "Mode: Phase 2" and "Content chunks: 178"
+2. **✅ Verify Content Types**: Should show categorized types (legal, requirements, etc.)
+3. **✅ Test Complex Queries**: Try EJARI regulation questions
+4. **✅ Verify Response Format**: Should include source attribution and content types
+
+**Recommended Phase 2 Test Queries:**
+```
+What is EJARI?
+How do I register a tenancy contract with EJARI?
+What are the rent increase percentages in Dubai?
+What documents are required for EJARI registration?
+What are landlord obligations?
+Training requirements for EJARI
+Property management companies requirements
+```
+
+**Expected Phase 2 Response Format:**
+```
+[Detailed contextual answer...]
+
+*Source: EJARI Program Section*
+(Confidence: 0.72, Type: legal)
+```
+
+### **Force Specific Phase Testing**
+```bash
+# Test individual phases programmatically
+cat > test_phases.py << 'EOF'
+import sys
+from pathlib import Path
+backend_path = Path(__file__).parent / "backend"
+sys.path.append(str(backend_path))
+
+from services.semantic_search import SemanticSearch
+from utils.version_manager import SystemPhase
+
+# Test Phase 1 (CSV mode)
+print("=== PHASE 1 TEST ===")
+search_system = SemanticSearch(force_phase=SystemPhase.PHASE_1)
+search_system.initialize()
+print(f"Stats: {search_system.get_stats()}")
+
+# Test Phase 2 (Content mode)  
+print("\n=== PHASE 2 TEST ===")
+search_system = SemanticSearch(force_phase=SystemPhase.PHASE_2)
+search_system.initialize() 
+print(f"Stats: {search_system.get_stats()}")
+EOF
+
+uv run python test_phases.py
+```
+
+### **Troubleshooting Phase 2**
+```bash
+# Check required data files exist
+ls -la data/content.txt    # Should be ~82KB EJARI documentation
+ls -la data/qa.csv         # Should exist for Phase 1 fallback
+ls -la data/embeddings/    # Should contain embeddings.pkl
+
+# Regenerate embeddings if corrupted/missing
+rm data/embeddings/embeddings.pkl
+uv run python tests_and_demos/test_final_system.py  # Will regenerate automatically
+
+# Check virtual environment status
+ls -la .venv/              # Should exist (UV managed)
+uv run which python       # Should point to .venv/bin/python
+
+# Manual virtual environment activation (if needed)
+source .venv/bin/activate
+streamlit run main.py
+```
+
+### **Performance Benchmarks**
+- **Phase 1**: ~40% query success rate, 8 Q&A pairs, basic responses
+- **Phase 2**: ~90% query success rate, 178 content chunks, rich contextual responses
+- **Improvement**: 22x knowledge base expansion, 2.25x success rate improvement
 
 ## 🎬 Execution Steps
 
@@ -378,6 +493,7 @@ graph LR
 
 ---
 
-**📚 For detailed technical implementation details, see:**
-- **[PHASE2_TECHNICAL.md](PHASE2_TECHNICAL.md)** - Complete technical documentation
-- **[PHASE2_SUMMARY.md](PHASE2_SUMMARY.md)** - Executive summary of enhancements
+**📚 For detailed documentation, see:**
+- **[docs/PHASE2_TECHNICAL.md](docs/PHASE2_TECHNICAL.md)** - Complete technical implementation details
+- **[docs/PHASE2_SUMMARY.md](docs/PHASE2_SUMMARY.md)** - Executive summary of enhancements
+- **[docs/DEVELOPMENT_GUIDELINES.md](docs/DEVELOPMENT_GUIDELINES.md)** - Release management and testing guidelines

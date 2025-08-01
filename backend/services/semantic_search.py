@@ -15,20 +15,36 @@ sys.path.append(str(backend_path))
 from models.qa_model import QAPair, SearchResult
 from utils.config import QA_CSV_PATH, EMBEDDINGS_PATH, DEFAULT_MODEL, DEFAULT_THRESHOLD, DATA_DIR
 from utils.content_parser import ContentParser
+from utils.version_manager import version_manager, SystemPhase
 
 class SemanticSearch:
-    def __init__(self, content_file=None, csv_path=None, model_name=None, threshold=None):
+    def __init__(self, content_file=None, csv_path=None, model_name=None, threshold=None, force_phase=None):
+        # Version-aware initialization
+        self.forced_phase = force_phase
+        if force_phase:
+            version_manager.set_phase(force_phase)
+        
+        phase_config = version_manager.get_phase_config()
+        
         self.content_file = content_file or str(DATA_DIR / "content.txt")
         self.csv_path = csv_path or str(QA_CSV_PATH)
         self.model_name = model_name or DEFAULT_MODEL
-        self.threshold = threshold or DEFAULT_THRESHOLD
+        self.threshold = threshold or phase_config.threshold
         self.model = None
         self.df = None  # Keep for backward compatibility with existing CSV data
         self.content_chunks = []  # New: store parsed content chunks
         self.embeddings = None
         self.embeddings_path = str(EMBEDDINGS_PATH)
         self.content_parser = ContentParser()
-        self.use_content_mode = True  # Flag to use new content-based approach
+        
+        # Determine operational mode based on phase
+        current_phase = version_manager.get_current_phase()
+        if current_phase == SystemPhase.PHASE_1 or force_phase == SystemPhase.PHASE_1:
+            self.use_content_mode = False
+        elif current_phase == SystemPhase.PHASE_2 or force_phase == SystemPhase.PHASE_2:
+            self.use_content_mode = True
+        else:
+            self.use_content_mode = True  # Default to content mode
         
     def load_data(self):
         """Load data from both content file and CSV for backward compatibility."""
@@ -218,6 +234,10 @@ class SemanticSearch:
         """Get statistics about the current knowledge base."""
         stats = []
         
+        # Add version information
+        version_info = version_manager.get_version_info()
+        stats.append(f"Mode: {version_info['current_phase'].replace('_', ' ').title()}")
+        
         if self.use_content_mode and self.content_chunks:
             chunk_stats = self.content_parser.get_stats(self.content_chunks)
             stats.append(f"Content chunks: {len(self.content_chunks)}")
@@ -231,4 +251,10 @@ class SemanticSearch:
         if self.embeddings is not None:
             stats.append(f"Embeddings: {len(self.embeddings)}")
         
+        stats.append(f"Threshold: {self.threshold}")
+        
         return "Knowledge base - " + "; ".join(stats) if stats else "No data loaded"
+    
+    def get_version_info(self):
+        """Get current version and phase information."""
+        return version_manager.get_version_info()
