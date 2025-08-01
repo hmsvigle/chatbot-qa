@@ -1,5 +1,11 @@
 # ignore virtual env directory
 chatbot-qa
+uv.lock
+.venv
+
+# compiled classes
+**/__pycache__/
+data/embedings/embeddings.pkl
 
 # personal apitokens
 .env

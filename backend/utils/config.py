@@ -12,8 +12,11 @@ EMBEDDINGS_PATH = EMBEDDINGS_DIR / "embeddings.pkl"
 
 # Model configuration
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-DEFAULT_THRESHOLD = 0.7
+DEFAULT_THRESHOLD = 0.5  # Lowered threshold for better content matching
 EMBEDDING_DIMENSION = 384
+
+# Content processing configuration
+CONTENT_FILE_PATH = DATA_DIR / "content.txt"
 
 # Ensure directories exist
 EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
